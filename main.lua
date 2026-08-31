@@ -572,30 +572,49 @@ function library.new(library_title, cfg_location)
                                 ToggleButton.Visible = true
                             else
                                 if not ToggleButton.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -22)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -26)
                                 ToggleButton.Visible = false
                             end
                         end
 
-                        local ToggleFrame = library:create("Frame", {
-                            AnchorPoint = Vector2.new(0, 0.5),
-                            BackgroundColor3 = Color3.fromRGB(12, 12, 12),
-                            BorderColor3 = Color3.fromRGB(45, 45, 45),
-                            BorderSizePixel = 1,
-                            Position = UDim2.new(0, 10, 0.5, 0),
-                            Size = UDim2.new(0, 14, 0, 14),
-                        }, ToggleButton)
-
                         local ToggleText = library:create("TextLabel", {
                             BackgroundTransparency = 1,
-                            Position = UDim2.new(0, 32, 0, 5),
-                            Size = UDim2.new(0, 190, 0, 14),
+                            Position = UDim2.new(0, 12, 0, 0),
+                            Size = UDim2.new(1, -50, 1, 0),
                             Font = Enum.Font.Ubuntu,
                             Text = text,
-                            TextColor3 = Color3.fromRGB(150, 150, 150),
-                            TextSize = 14,
+                            TextColor3 = Color3.fromRGB(180, 180, 180),
+                            TextSize = 13,
                             TextXAlignment = Enum.TextXAlignment.Left,
+                            TextYAlignment = Enum.TextYAlignment.Center,
                         }, ToggleButton)
+
+                        -- Outer box (matches image style)
+                        local ToggleFrame = library:create("Frame", {
+                            AnchorPoint = Vector2.new(1, 0.5),
+                            BackgroundColor3 = Color3.fromRGB(18, 18, 18),
+                            BorderColor3 = Color3.fromRGB(40, 40, 40),
+                            BorderSizePixel = 1,
+                            Position = UDim2.new(1, -12, 0.5, 0),
+                            Size = UDim2.new(0, 16, 0, 16),
+                        }, ToggleButton)
+
+                        -- Inner fill with gradient
+                        local ToggleInner = library:create("Frame", {
+                            AnchorPoint = Vector2.new(0.5, 0.5),
+                            BackgroundColor3 = Color3.fromRGB(28, 28, 28),
+                            BorderSizePixel = 0,
+                            Position = UDim2.new(0.5, 0, 0.5, 0),
+                            Size = UDim2.new(1, -2, 1, -2),
+                        }, ToggleFrame)
+
+                        local ToggleGradient = library:create("UIGradient", {
+                            Color = ColorSequence.new{
+                                ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 35)),
+                                ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 18, 18))
+                            },
+                            Rotation = 90,
+                        }, ToggleInner)
 
                         local mouse_in = false
                         function element:set_value(new_value, cb)
@@ -603,12 +622,22 @@ function library.new(library_title, cfg_location)
                             menu.values[tab.tab_num][section_name][sector_name][flag] = value
 
                             if value.Toggle then
-                                library:tween(ToggleFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(255, 255, 255), BorderColor3 = Color3.fromRGB(255, 255, 255)})
-                                library:tween(ToggleText, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)})
+                                library:tween(ToggleFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(220, 220, 220), BorderColor3 = Color3.fromRGB(255, 255, 255)})
+                                library:tween(ToggleInner, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(255, 255, 255)})
+                                ToggleGradient.Color = ColorSequence.new{
+                                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+                                    ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200))
+                                }
+                                library:tween(ToggleText, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)})
                             else
-                                library:tween(ToggleFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(12, 12, 12), BorderColor3 = Color3.fromRGB(45, 45, 45)})
+                                library:tween(ToggleFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(18, 18, 18), BorderColor3 = Color3.fromRGB(40, 40, 40)})
+                                library:tween(ToggleInner, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(28, 28, 28)})
+                                ToggleGradient.Color = ColorSequence.new{
+                                    ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 35)),
+                                    ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 18, 18))
+                                }
                                 if not mouse_in then
-                                    library:tween(ToggleText, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(150, 150, 150)})
+                                    library:tween(ToggleText, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(180, 180, 180)})
                                 end
                             end
 
@@ -619,12 +648,12 @@ function library.new(library_title, cfg_location)
                         ToggleButton.MouseEnter:Connect(function()
                             mouse_in = true
                             if value.Toggle then return end
-                            library:tween(ToggleText, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)})
+                            library:tween(ToggleText, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)})
                         end)
                         ToggleButton.MouseLeave:Connect(function()
                             mouse_in = false
                             if value.Toggle then return end
-                            library:tween(ToggleText, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(150, 150, 150)})
+                            library:tween(ToggleText, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(180, 180, 180)})
                         end)
                         ToggleButton.MouseButton1Down:Connect(function()
                             element:set_value({Toggle = not value.Toggle})
