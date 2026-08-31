@@ -416,27 +416,27 @@ function library.new(library_title, cfg_location)
             local Left = library:create("Frame", {
                 Name = "Left",
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 8, 0, 14),
-                Size = UDim2.new(0, 230, 0, 325),
+                Position = UDim2.new(0, 8, 0, 10),
+                Size = UDim2.new(0, 230, 0, 335),
             }, SectionFrame)
 
             local UIListLayout = library:create("UIListLayout", {
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 SortOrder = Enum.SortOrder.LayoutOrder,
-                Padding = UDim.new(0, 12),
+                Padding = UDim.new(0, 18),
             }, Left)
 
             local Right = library:create("Frame", {
                 Name = "Right",
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 246, 0, 14),
-                Size = UDim2.new(0, 230, 0, 325),
+                Position = UDim2.new(0, 246, 0, 10),
+                Size = UDim2.new(0, 230, 0, 335),
             }, SectionFrame)
 
             local UIListLayout = library:create("UIListLayout", {
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 SortOrder = Enum.SortOrder.LayoutOrder,
-                Padding = UDim.new(0, 12),
+                Padding = UDim.new(0, 18),
             }, Right)
 
             SectionButton.MouseButton1Down:Connect(function()
@@ -475,8 +475,8 @@ function library.new(library_title, cfg_location)
 
                 local Border = library:create("Frame", {
                     BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-                    BorderColor3 = Color3.fromRGB(20, 20, 20),
-                    Size = UDim2.new(1, 0, 0, 20),
+                    BorderColor3 = Color3.fromRGB(30, 30, 30),
+                    Size = UDim2.new(1, 0, 0, 28),
                 }, actual_side)
 
                 local Container = library:create("Frame", {
@@ -489,18 +489,20 @@ function library.new(library_title, cfg_location)
                 local UIListLayout = library:create("UIListLayout", {
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     SortOrder = Enum.SortOrder.LayoutOrder,
+                    Padding = UDim.new(0, 4),
                 }, Container)
 
                 local UIPadding = library:create("UIPadding", {
-                    PaddingTop = UDim.new(0, 12),
+                    PaddingTop = UDim.new(0, 16),
+                    PaddingBottom = UDim.new(0, 8),
                 }, Container)
 
                 local SectorTitle = library:create("TextLabel", {
                     Name = "Title",
                     AnchorPoint = Vector2.new(0.5, 0),
                     BackgroundTransparency = 1,
-                    Position = UDim2.new(0.5, 0, 0, -8),
-                    Size = UDim2.new(1, 0, 0, 15),
+                    Position = UDim2.new(0.5, 0, 0, -10),
+                    Size = UDim2.new(1, 0, 0, 16),
                     Font = Enum.Font.Ubuntu,
                     Text = sector_name,
                     TextColor3 = Color3.fromRGB(255, 255, 255),
@@ -550,7 +552,7 @@ function library.new(library_title, cfg_location)
                     end
 
                     if type == "Toggle" then
-                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 18)
+                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 22)
 
                         value = {Toggle = default and default.Toggle or false}
 
@@ -559,18 +561,18 @@ function library.new(library_title, cfg_location)
                             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                             BackgroundTransparency = 1,
                             Position = UDim2.new(0, 0, 0, 0),
-                            Size = UDim2.new(1, 0, 0, 18),
+                            Size = UDim2.new(1, 0, 0, 22),
                             Text = "",
                         }, Container)
 
                         function element:set_visible(bool)
                             if bool then
                                 if ToggleButton.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 18)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 22)
                                 ToggleButton.Visible = true
                             else
                                 if not ToggleButton.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -18)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -22)
                                 ToggleButton.Visible = false
                             end
                         end
@@ -1116,25 +1118,25 @@ function library.new(library_title, cfg_location)
                             return color
                         end
                     elseif type == "Dropdown" then
-                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 45)
+                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 50)
 
                         value = {Dropdown = default and default.Dropdown or data.options[1]}
 
                         local Dropdown = library:create("TextLabel", {
                             Name = "Dropdown",
                             BackgroundTransparency = 1,
-                            Size = UDim2.new(1, 0, 0, 45),
+                            Size = UDim2.new(1, 0, 0, 50),
                             Text = "",
                         }, Container)
 
                         function element:set_visible(bool)
                             if bool then
                                 if Dropdown.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 45)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 50)
                                 Dropdown.Visible = true
                             else
                                 if not Dropdown.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -45)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -50)
                                 Dropdown.Visible = false
                             end
                         end
@@ -1322,25 +1324,25 @@ function library.new(library_title, cfg_location)
                         end
                         element:set_value(value, true)
                     elseif type == "Combo" then
-                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 45)
+                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 50)
 
                         value = {Combo = default and default.Combo or {}}
 
                         local Dropdown = library:create("TextLabel", {
                             Name = "Dropdown",
                             BackgroundTransparency = 1,
-                            Size = UDim2.new(1, 0, 0, 45),
+                            Size = UDim2.new(1, 0, 0, 50),
                             Text = "",
                         }, Container)
 
                         function element:set_visible(bool)
                             if bool then
                                 if Dropdown.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 45)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 50)
                                 Dropdown.Visible = true
                             else
                                 if not Dropdown.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -45)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -50)
                                 Dropdown.Visible = false
                             end
                         end
@@ -1581,13 +1583,13 @@ function library.new(library_title, cfg_location)
                         end
                         element:set_value(value, true)
                     elseif type == "Button" then
-                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 30)
+                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 34)
 
                         local ButtonFrame = library:create("Frame", {
                             Name = "ButtonFrame",
                             BackgroundTransparency = 1,
                             Position = UDim2.new(0, 0, 0, 0),
-                            Size = UDim2.new(1, 0, 0, 30),
+                            Size = UDim2.new(1, 0, 0, 34),
                         }, Container)
 
                         local Button = library:create("TextButton", {
@@ -1616,7 +1618,7 @@ function library.new(library_title, cfg_location)
                             do_callback()
                         end)
                     elseif type == "TextBox" then
-                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 30)
+                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 34)
 
                         value = {Text = data.default and data.default or ""}
 
@@ -1624,17 +1626,17 @@ function library.new(library_title, cfg_location)
                             Name = "ButtonFrame",
                             BackgroundTransparency = 1,
                             Position = UDim2.new(0, 0, 0, 0),
-                            Size = UDim2.new(1, 0, 0, 30),
+                            Size = UDim2.new(1, 0, 0, 34),
                         }, Container)
 
                         function element:set_visible(bool)
                             if bool then
                                 if ButtonFrame.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 30)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 34)
                                 ButtonFrame.Visible = true
                             else
                                 if not ButtonFrame.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -30)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -34)
                                 ButtonFrame.Visible = false
                             end
                         end
@@ -1912,7 +1914,7 @@ function library.new(library_title, cfg_location)
                         end
                         element:set_value(value, true)
                     elseif type == "Slider" then
-                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 35)
+                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 40)
 
                         value = {Slider = default and default.default or 0}
 
@@ -1922,17 +1924,17 @@ function library.new(library_title, cfg_location)
                             Name = "Slider",
                             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                             BackgroundTransparency = 1,
-                            Size = UDim2.new(1, 0, 0, 35),
+                            Size = UDim2.new(1, 0, 0, 40),
                         }, Container)
 
                         function element:set_visible(bool)
                             if bool then
                                 if Slider.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 35)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, 40)
                                 Slider.Visible = true
                             else
                                 if not Slider.Visible then return end
-                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -35)
+                                Border.Size = Border.Size + UDim2.new(0, 0, 0, -40)
                                 Slider.Visible = false
                             end
                         end
