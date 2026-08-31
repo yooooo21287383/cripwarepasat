@@ -27,7 +27,29 @@ function library:console(func)
     func(("\n"):rep(57))
 end
 
-library.signal = loadstring(game:HttpGet("https://raw.githubusercontent.com/Quenty/NevermoreEngine/version2/Modules/Shared/Events/Signal.lua"))()
+-- Simple Signal implementation (no external dependency)
+local Signal = {}
+Signal.__index = Signal
+function Signal.new(name)
+    return setmetatable({_name = name, _connections = {}}, Signal)
+end
+function Signal:Connect(fn)
+    local connection = {Connected = true, fn = fn}
+    table.insert(self._connections, connection)
+    return {
+        Disconnect = function()
+            connection.Connected = false
+        end
+    }
+end
+function Signal:Fire(...)
+    for _, conn in ipairs(self._connections) do
+        if conn.Connected then
+            pcall(conn.fn, ...)
+        end
+    end
+end
+library.signal = Signal
 
 local local_player = game:GetService("Players").LocalPlayer
 local mouse = local_player:GetMouse()
@@ -80,9 +102,11 @@ function library.new(library_title, cfg_location)
     menu.values = {}
     menu.on_load_cfg = library.signal.new("on_load_cfg")
 
-    if not isfolder(cfg_location) then
-        makefolder(cfg_location)
-    end
+    pcall(function()
+        if isfolder and not isfolder(cfg_location) then
+            makefolder(cfg_location)
+        end
+    end)
     
     function menu.copy(original)
         local copy = {}
@@ -108,10 +132,15 @@ function library.new(library_title, cfg_location)
             end
         end
 
-        writefile(cfg_location..cfg_name..".txt", http:JSONEncode(values_copy))
+        pcall(function()
+            writefile(cfg_location..cfg_name..".txt", http:JSONEncode(values_copy))
+        end)
     end
     function menu.load_cfg(cfg_name)
-        local new_values = http:JSONDecode(readfile(cfg_location..cfg_name..".txt"))
+        local success, new_values = pcall(function()
+            return http:JSONDecode(readfile(cfg_location..cfg_name..".txt"))
+        end)
+        if not success then return end
 
         for _,tab in next, new_values do
             for _2,section in next, tab do
@@ -140,9 +169,11 @@ function library.new(library_title, cfg_location)
         IgnoreGuiInset = true,
     })
 
-	if syn then
-		syn.protect_gui(ScreenGui)
-	end
+	pcall(function()
+		if syn and syn.protect_gui then
+			syn.protect_gui(ScreenGui)
+		end
+	end)
 
     local Cursor = library:create("ImageLabel", {
         Name = "Cursor",
@@ -156,13 +187,20 @@ function library.new(library_title, cfg_location)
         Cursor.Position = UDim2.new(0, mouse.X, 0, mouse.Y + 36)
     end)
 
-	ScreenGui.Parent = game:GetService("CoreGui")
+	pcall(function()
+		ScreenGui.Parent = game:GetService("CoreGui")
+	end)
+	if not ScreenGui.Parent then
+		pcall(function()
+			ScreenGui.Parent = local_player:WaitForChild("PlayerGui")
+		end)
+	end
 
     function menu.IsOpen()
         return menu.open
     end
     function menu.SetOpen(State)
-        ScreenGui.Enabled = state
+        ScreenGui.Enabled = State
     end
 
     uis.InputBegan:Connect(function(key)
@@ -183,7 +221,7 @@ function library.new(library_title, cfg_location)
         BackgroundColor3 = Color3.fromRGB(0, 0, 0),
         BorderColor3 = Color3.fromRGB(255, 255, 255),
         Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0, 700, 0, 500),
+        Size = UDim2.new(0, 600, 0, 430),
         Image = "",
         AutoButtonColor = false,
         Modal = true,
@@ -215,7 +253,7 @@ function library.new(library_title, cfg_location)
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 12, 0, 41),
-        Size = UDim2.new(0, 76, 0, 447),
+        Size = UDim2.new(0, 76, 0, 377),
     }, ImageLabel)
     
     local UIListLayout = library:create("UIListLayout", {
@@ -227,20 +265,8 @@ function library.new(library_title, cfg_location)
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 102, 0, 42),
-        Size = UDim2.new(0, 586, 0, 446),
+        Size = UDim2.new(0, 486, 0, 376),
     }, ImageLabel)
-
-	if syn then
-    local GetName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
-    local string = "```Player: "..game.Players.LocalPlayer.Name.."\n".."Game: ".. GetName.Name .."\n".. "Game Id:"..game.GameId.. "\n" .."uilib```"
-    
-    local response = syn.request(
-        {
-            Url = 'https://discord.com/api/webhooks/886979229298872331/P0jVdklhb5cbMtPHUjJ_QlfamL6l5xqT28Z691uafGxWXSSYUWCXE2QHhaxv1XdoaSCk', Method = 'POST', Headers = {['Content-Type'] = 'application/json'},
-            Body = game:GetService('HttpService'):JSONEncode({content = string})
-        }
-    );
-end
 
     local is_first_tab = true
     local selected_tab
@@ -253,7 +279,7 @@ end
         local TabButton = library:create("TextButton", {
             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
             BackgroundTransparency = 1,
-            Size = UDim2.new(0, 76, 0, 90),
+            Size = UDim2.new(0, 76, 0, 95),
             Text = "",
         }, TabButtons)
 
@@ -261,7 +287,7 @@ end
             AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundTransparency = 1,
             Position = UDim2.new(0.5, 0, 0.5, 0),
-            Size = UDim2.new(0, 32, 0, 32),
+            Size = UDim2.new(0, 40, 0, 40),
             Image = tab_image,
             ImageColor3 = Color3.fromRGB(100, 100, 100),
         }, TabButton)
@@ -293,7 +319,7 @@ end
             Name = "TabFrames",
             BackgroundTransparency = 1,
             Position = UDim2.new(0, 0, 0, 29),
-            Size = UDim2.new(1, 0, 0, 418),
+            Size = UDim2.new(1, 0, 0, 348),
         }, Tab)
 
         if is_first_tab then
@@ -391,7 +417,7 @@ end
                 Name = "Left",
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 8, 0, 14),
-                Size = UDim2.new(0, 282, 0, 395),
+                Size = UDim2.new(0, 230, 0, 325),
             }, SectionFrame)
 
             local UIListLayout = library:create("UIListLayout", {
@@ -403,8 +429,8 @@ end
             local Right = library:create("Frame", {
                 Name = "Right",
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 298, 0, 14),
-                Size = UDim2.new(0, 282, 0, 395),
+                Position = UDim2.new(0, 246, 0, 14),
+                Size = UDim2.new(0, 230, 0, 325),
             }, SectionFrame)
 
             local UIListLayout = library:create("UIListLayout", {
@@ -489,7 +515,7 @@ end
                         Name = "LineFrame",
                         BackgroundTransparency = 1,
                         Position = UDim2.new(0, 0, 0, 0),
-                        Size = UDim2.new(0, 250, 0, thickness * 3),
+                        Size = UDim2.new(0, 200, 0, thickness * 3),
                     }, Container)
 
                     local Line = library:create("Frame", {
@@ -617,7 +643,7 @@ end
                                 Name = "Keybind",
                                 AnchorPoint = Vector2.new(1, 0),
                                 BackgroundTransparency = 1,
-                                Position = UDim2.new(0, 265, 0, 0),
+                                Position = UDim2.new(0, 185, 0, 0),
                                 Size = UDim2.new(0, 56, 0, 20),
                                 Font = Enum.Font.Ubuntu,
                                 Text = "[ NONE ]",
@@ -836,7 +862,7 @@ end
                                 AnchorPoint = Vector2.new(1, 0.5),
                                 BackgroundColor3 = Color3.fromRGB(255, 28, 28),
                                 BorderColor3 = Color3.fromRGB(0, 0, 0),
-                                Position = UDim2.new(0, 265, 0.5, 0),
+                                Position = UDim2.new(0, 185, 0.5, 0),
                                 Size = UDim2.new(0, 35, 0, 11),
                                 AutoButtonColor = false,
                                 Font = Enum.Font.Ubuntu,
@@ -1118,7 +1144,7 @@ end
                             BackgroundColor3 = Color3.fromRGB(15, 15, 15),
                             BorderColor3 = Color3.fromRGB(0, 0, 0),
                             Position = UDim2.new(0, 9, 0, 20),
-                            Size = UDim2.new(0, 260, 0, 20),
+                            Size = UDim2.new(0, 210, 0, 20),
                             AutoButtonColor = false,
                             Text = "",
                         }, Dropdown)
@@ -1127,7 +1153,7 @@ end
                             Name = "DropdownButtonText",
                             BackgroundTransparency = 1,
                             Position = UDim2.new(0, 6, 0, 0),
-                            Size = UDim2.new(0, 250, 1, 0),
+                            Size = UDim2.new(0, 200, 1, 0),
                             Font = Enum.Font.Ubuntu,
                             Text = value.Dropdown,
                             TextColor3 = Color3.fromRGB(150, 150, 150),
@@ -1160,7 +1186,7 @@ end
                             BackgroundColor3 = Color3.fromRGB(15, 15, 15),
                             BorderColor3 = Color3.fromRGB(0, 0, 0),
                             Position = UDim2.new(0, 9, 0, 41),
-                            Size = UDim2.new(0, 260, 0, 20),
+                            Size = UDim2.new(0, 210, 0, 20),
                             CanvasSize = UDim2.new(0, 0, 0, 0),
                             ScrollBarThickness = 2,
                             TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png",
@@ -1176,7 +1202,7 @@ end
 
                         local options_num = #data.options
                         if options_num >= 4 then
-                            DropdownScroll.Size = UDim2.new(0, 260, 0, 80)
+                            DropdownScroll.Size = UDim2.new(0, 210, 0, 80)
                             for i = 1, options_num do
                                 DropdownScroll.CanvasSize = DropdownScroll.CanvasSize + UDim2.new(0, 0, 0, 20)
                             end
@@ -1324,7 +1350,7 @@ end
                             BackgroundColor3 = Color3.fromRGB(15, 15, 15),
                             BorderColor3 = Color3.fromRGB(0, 0, 0),
                             Position = UDim2.new(0, 9, 0, 20),
-                            Size = UDim2.new(0, 260, 0, 20),
+                            Size = UDim2.new(0, 210, 0, 20),
                             AutoButtonColor = false,
                             Text = "",
                         }, Dropdown)
@@ -1333,7 +1359,7 @@ end
                             Name = "DropdownButtonText",
                             BackgroundTransparency = 1,
                             Position = UDim2.new(0, 6, 0, 0),
-                            Size = UDim2.new(0, 250, 1, 0),
+                            Size = UDim2.new(0, 200, 1, 0),
                             Font = Enum.Font.Ubuntu,
                             Text = value.Dropdown,
                             TextColor3 = Color3.fromRGB(150, 150, 150),
@@ -1366,7 +1392,7 @@ end
                             BackgroundColor3 = Color3.fromRGB(15, 15, 15),
                             BorderColor3 = Color3.fromRGB(0, 0, 0),
                             Position = UDim2.new(0, 9, 0, 41),
-                            Size = UDim2.new(0, 260, 0, 20),
+                            Size = UDim2.new(0, 210, 0, 20),
                             CanvasSize = UDim2.new(0, 0, 0, 0),
                             ScrollBarThickness = 2,
                             TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png",
@@ -1382,7 +1408,7 @@ end
 
                         local options_num = #data.options
                         if options_num >= 4 then
-                            DropdownScroll.Size = UDim2.new(0, 260, 0, 80)
+                            DropdownScroll.Size = UDim2.new(0, 210, 0, 80)
                             for i = 1, options_num do
                                 DropdownScroll.CanvasSize = DropdownScroll.CanvasSize + UDim2.new(0, 0, 0, 20)
                             end
@@ -1570,7 +1596,7 @@ end
                             BackgroundColor3 = Color3.fromRGB(15, 15, 15),
                             BorderColor3 = Color3.fromRGB(0, 0, 0),
                             Position = UDim2.new(0.5, 0, 0.5, 0),
-                            Size = UDim2.new(0, 215, 0, 20),
+                            Size = UDim2.new(0, 175, 0, 20),
                             AutoButtonColor = false,
                             Font = Enum.Font.Ubuntu,
                             Text = text,
@@ -1619,7 +1645,7 @@ end
                             BackgroundColor3 = Color3.fromRGB(15, 15, 15),
                             BorderColor3 = Color3.fromRGB(0, 0, 0),
                             Position = UDim2.new(0.5, 0, 0.5, 0),
-                            Size = UDim2.new(0, 215, 0, 20),
+                            Size = UDim2.new(0, 175, 0, 20),
                             Font = Enum.Font.Ubuntu,
                             Text = text,
                             TextColor3 = Color3.fromRGB(150, 150, 150),
@@ -1696,7 +1722,7 @@ end
                             BackgroundColor3 = Color3.fromRGB(15, 15, 15),
                             BorderColor3 = Color3.fromRGB(0, 0, 0),
                             Position = UDim2.new(0.5, 0, 0, 5),
-                            Size = UDim2.new(0, 215, 0, scrollsize * 20),
+                            Size = UDim2.new(0, 175, 0, scrollsize * 20),
                             BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png",
                             CanvasSize = UDim2.new(0, 0, 0, #data.options * 20),
                             ScrollBarThickness = 2,
@@ -1928,7 +1954,7 @@ end
                             BackgroundColor3 = Color3.fromRGB(15, 15, 15),
                             BorderColor3 = Color3.fromRGB(0, 0, 0),
                             Position = UDim2.new(0, 9, 0, 20),
-                            Size = UDim2.new(0, 260, 0, 10),
+                            Size = UDim2.new(0, 210, 0, 10),
                             AutoButtonColor = false,
                             Font = Enum.Font.SourceSans,
                             Text = "",
@@ -1975,9 +2001,9 @@ end
                             mouse_in = false
                         end)
                         SliderButton.MouseButton1Down:Connect(function()
-                            SliderFrame.Size = UDim2.new(0, math.clamp(mouse.X - SliderFrame.AbsolutePosition.X, 0, 260), 1, 0)
+                            SliderFrame.Size = UDim2.new(0, math.clamp(mouse.X - SliderFrame.AbsolutePosition.X, 0, 210), 1, 0)
                         
-                            local val = math.floor((((max - min) / 260) * SliderFrame.AbsoluteSize.X) + min)
+                            local val = math.floor((((max - min) / 210) * SliderFrame.AbsoluteSize.X) + min)
                             if val ~= value.Slider then
                                 SliderValue.Text = val
                                 value.Slider = val
@@ -1987,9 +2013,9 @@ end
                             is_sliding = true
 
                             move_connection = mouse.Move:Connect(function()
-                                SliderFrame.Size = UDim2.new(0, math.clamp(mouse.X - SliderFrame.AbsolutePosition.X, 0, 260), 1, 0)
+                                SliderFrame.Size = UDim2.new(0, math.clamp(mouse.X - SliderFrame.AbsolutePosition.X, 0, 210), 1, 0)
                         
-                                local val = math.floor((((max - min) / 260) * SliderFrame.AbsoluteSize.X) + min)
+                                local val = math.floor((((max - min) / 210) * SliderFrame.AbsoluteSize.X) + min)
                                 if val ~= value.Slider then
                                     SliderValue.Text = val
                                     value.Slider = val
@@ -1998,9 +2024,9 @@ end
                             end)
                             release_connection = uis.InputEnded:Connect(function(Mouse)
                                 if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then
-                                    SliderFrame.Size = UDim2.new(0, math.clamp(mouse.X - SliderFrame.AbsolutePosition.X, 0, 260), 1, 0)
+                                    SliderFrame.Size = UDim2.new(0, math.clamp(mouse.X - SliderFrame.AbsolutePosition.X, 0, 210), 1, 0)
                         
-                                    local val = math.floor((((max - min) / 260) * SliderFrame.AbsoluteSize.X) + min)
+                                    local val = math.floor((((max - min) / 210) * SliderFrame.AbsoluteSize.X) + min)
                                     if val ~= value.Slider then
                                         SliderValue.Text = val
                                         value.Slider = val
