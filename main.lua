@@ -221,7 +221,7 @@ function library.new(library_title, cfg_location)
         BackgroundColor3 = Color3.fromRGB(0, 0, 0),
         BorderColor3 = Color3.fromRGB(255, 255, 255),
         Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0, 620, 0, 480),
+        Size = UDim2.new(0, 620, 0, 520),
         Image = "",
         AutoButtonColor = false,
         Modal = true,
@@ -253,7 +253,7 @@ function library.new(library_title, cfg_location)
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 12, 0, 41),
-        Size = UDim2.new(0, 76, 0, 427),
+        Size = UDim2.new(0, 76, 0, 467),
     }, ImageLabel)
     
     local UIListLayout = library:create("UIListLayout", {
@@ -265,7 +265,7 @@ function library.new(library_title, cfg_location)
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 102, 0, 42),
-        Size = UDim2.new(0, 506, 0, 426),
+        Size = UDim2.new(0, 506, 0, 466),
     }, ImageLabel)
 
     local is_first_tab = true
@@ -319,7 +319,7 @@ function library.new(library_title, cfg_location)
             Name = "TabFrames",
             BackgroundTransparency = 1,
             Position = UDim2.new(0, 0, 0, 29),
-            Size = UDim2.new(1, 0, 0, 398),
+            Size = UDim2.new(1, 0, 0, 438),
         }, Tab)
 
         if is_first_tab then
@@ -417,7 +417,7 @@ function library.new(library_title, cfg_location)
                 Name = "Left",
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 8, 0, 10),
-                Size = UDim2.new(0, 240, 0, 380),
+                Size = UDim2.new(0, 240, 0, 420),
             }, SectionFrame)
 
             local UIListLayout = library:create("UIListLayout", {
@@ -430,7 +430,7 @@ function library.new(library_title, cfg_location)
                 Name = "Right",
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 256, 0, 10),
-                Size = UDim2.new(0, 240, 0, 380),
+                Size = UDim2.new(0, 240, 0, 420),
             }, SectionFrame)
 
             local UIListLayout = library:create("UIListLayout", {
@@ -476,7 +476,7 @@ function library.new(library_title, cfg_location)
                 local Border = library:create("Frame", {
                     BackgroundColor3 = Color3.fromRGB(0, 0, 0),
                     BorderColor3 = Color3.fromRGB(30, 30, 30),
-                    Size = UDim2.new(1, 0, 0, 200),
+                    Size = UDim2.new(1, 0, 0, 280),
                 }, actual_side)
 
                 local Container = library:create("Frame", {
