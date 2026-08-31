@@ -476,7 +476,7 @@ function library.new(library_title, cfg_location)
                 local Border = library:create("Frame", {
                     BackgroundColor3 = Color3.fromRGB(0, 0, 0),
                     BorderColor3 = Color3.fromRGB(30, 30, 30),
-                    Size = UDim2.new(1, 0, 0, 32),
+                    Size = UDim2.new(1, 0, 0, 200),
                 }, actual_side)
 
                 local Container = library:create("Frame", {
@@ -489,12 +489,12 @@ function library.new(library_title, cfg_location)
                 local UIListLayout = library:create("UIListLayout", {
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     SortOrder = Enum.SortOrder.LayoutOrder,
-                    Padding = UDim.new(0, 4),
+                    Padding = UDim.new(0, 6),
                 }, Container)
 
                 local UIPadding = library:create("UIPadding", {
-                    PaddingTop = UDim.new(0, 18),
-                    PaddingBottom = UDim.new(0, 8),
+                    PaddingTop = UDim.new(0, 20),
+                    PaddingBottom = UDim.new(0, 12),
                 }, Container)
 
                 local SectorTitle = library:create("TextLabel", {
